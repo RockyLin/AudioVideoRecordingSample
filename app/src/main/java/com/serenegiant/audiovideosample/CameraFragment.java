@@ -100,7 +100,7 @@ public class CameraFragment extends Fragment {
 		public void onClick(final View view) {
 			switch (view.getId()) {
 			case R.id.cameraView:
-				final int scale_mode = (mCameraView.getScaleMode() + 1) % 4;
+				final int scale_mode = (mCameraView.getScaleMode() + 1) % 5;
 				mCameraView.setScaleMode(scale_mode);
 				updateScaleModeText();
 				break;
@@ -120,7 +120,8 @@ public class CameraFragment extends Fragment {
 			scale_mode == 0 ? "scale to fit"
 			: (scale_mode == 1 ? "keep aspect(viewport)"
 			: (scale_mode == 2 ? "keep aspect(matrix)"
-			: (scale_mode == 3 ? "keep aspect(crop center)" : ""))));
+			: (scale_mode == 3 ? "keep aspect(crop center)"
+            : (scale_mode == 4 ? "square mode" : "")))));
 	}
 
 	/**
@@ -134,10 +135,24 @@ public class CameraFragment extends Fragment {
 		try {
 			mRecordButton.setColorFilter(0xffff0000);	// turn red
 			mMuxer = new MediaMuxerWrapper(".mp4");	// if you record audio only, ".m4a" is also OK.
-			if (true) {
-				// for video capturing
-				new MediaVideoEncoder(mMuxer, mMediaEncoderListener, mCameraView.getVideoWidth(), mCameraView.getVideoHeight());
+
+            if (true) {
+				int outputVideoWidth;
+                int outputVideoHeight;
+
+                if (mCameraView.getScaleMode() == CameraGLView.SCALE_SQUARE) {
+                    outputVideoWidth = 720;
+                    outputVideoHeight = 720;
+
+                } else {
+                    outputVideoWidth = mCameraView.getVideoWidth();
+                    outputVideoHeight = mCameraView.getVideoHeight();
+                }
+
+                // for video capturing
+                new MediaVideoEncoder(mMuxer, mMediaEncoderListener, outputVideoWidth, outputVideoHeight);
 			}
+
 			if (true) {
 				// for audio capturing
 				new MediaAudioEncoder(mMuxer, mMediaEncoderListener);

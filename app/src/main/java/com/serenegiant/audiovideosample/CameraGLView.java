@@ -56,15 +56,16 @@ import com.serenegiant.glutils.GLDrawer2D;
  */
 public final class CameraGLView extends GLSurfaceView {
 
-	private static final boolean DEBUG = false; // TODO set false on release
+	private static final boolean DEBUG = true; // TODO set false on release
 	private static final String TAG = "CameraGLView";
 
 	private static final int CAMERA_ID = 0;
 
-	private static final int SCALE_STRETCH_FIT = 0;
-	private static final int SCALE_KEEP_ASPECT_VIEWPORT = 1;
-	private static final int SCALE_KEEP_ASPECT = 2;
-	private static final int SCALE_CROP_CENTER = 3;
+    public static final int SCALE_STRETCH_FIT = 0;
+    public static final int SCALE_KEEP_ASPECT_VIEWPORT = 1;
+    public static final int SCALE_KEEP_ASPECT = 2;
+    public static final int SCALE_CROP_CENTER = 3;
+    public static final int SCALE_SQUARE = 4;
 
 	private final CameraSurfaceRenderer mRenderer;
 	private boolean mHasSurface;
@@ -325,6 +326,37 @@ public final class CameraGLView extends GLSurfaceView {
 					Matrix.scaleM(mMvpMatrix, 0, (float)(width / view_width), (float)(height / view_height), 1.0f);
 					break;
 				}
+                case SCALE_SQUARE:
+                {
+                    int view_x = 0;
+                    int view_y = 0;
+                    float scale_x = 1;
+                    float scale_y = 1;
+                    final int newPreviewSize;
+
+                    if (view_width >= view_height) {
+                        newPreviewSize = view_height;
+                        view_x = (view_width - newPreviewSize) / 2;
+
+                    } else {
+                        newPreviewSize = view_width;
+                        view_y = (view_height - newPreviewSize) / 2;
+                    }
+
+                    final float video_aspect = (float) (video_width / video_height);
+                    if (video_aspect >= 1) {
+                        scale_x = video_aspect;
+                    } else {
+                        scale_y = 1 / video_aspect;
+                    }
+                    Log.v(TAG, "scale square: " + scale_x + " " + scale_y);
+
+                    GLES20.glViewport(view_x, view_y, newPreviewSize, newPreviewSize);
+                    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+
+                    Matrix.scaleM(mMvpMatrix, 0, scale_x, scale_y, 1.0f);
+                    break;
+                }
 				}
 				if (mDrawer != null)
 					mDrawer.setMatrix(mMvpMatrix, 0);

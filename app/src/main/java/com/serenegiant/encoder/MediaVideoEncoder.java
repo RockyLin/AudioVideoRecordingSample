@@ -40,7 +40,8 @@ public class MediaVideoEncoder extends MediaEncoder {
 
 	private static final String MIME_TYPE = "video/avc";
 	// parameters for recording
-    private static final int FRAME_RATE = 25;
+    private static final int DEFAULT_FRAME_RATE = 25;
+    private static final int DEFAULT_IFRAME_INTERVAL = 10;
     private static final float BPP = 0.25f;
 
     private final int mWidth;
@@ -94,8 +95,8 @@ public class MediaVideoEncoder extends MediaEncoder {
         final MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE, mWidth, mHeight);
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);	// API >= 18
         format.setInteger(MediaFormat.KEY_BIT_RATE, calcBitRate());
-        format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
-        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 10);
+        format.setInteger(MediaFormat.KEY_FRAME_RATE, DEFAULT_FRAME_RATE);
+        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, DEFAULT_IFRAME_INTERVAL);
 		if (DEBUG) Log.i(TAG, "format: " + format);
 
         mMediaCodec = MediaCodec.createEncoderByType(MIME_TYPE);
@@ -133,7 +134,7 @@ public class MediaVideoEncoder extends MediaEncoder {
 	}
 
 	private int calcBitRate() {
-		final int bitrate = (int)(BPP * FRAME_RATE * mWidth * mHeight);
+		final int bitrate = (int)(BPP * DEFAULT_FRAME_RATE * mWidth * mHeight);
 		Log.i(TAG, String.format("bitrate=%5.2f[Mbps]", bitrate / 1024f / 1024f));
 		return bitrate;
 	}
