@@ -230,6 +230,11 @@ public final class CameraGLView extends GLSurfaceView {
 			if (!extensions.contains("OES_EGL_image_external"))
 				throw new RuntimeException("This system does not support OES_EGL_image_external.");
 			// create textur ID
+
+            if (hTex > 0) {
+                GLDrawer2D.deleteTex(hTex);
+            }
+
 			hTex = GLDrawer2D.initTex();
 			// create SurfaceTexture with texture ID.
 			mSTexture = new SurfaceTexture(hTex);
@@ -263,14 +268,14 @@ public final class CameraGLView extends GLSurfaceView {
 		public void onSurfaceDestroyed() {
 			if (DEBUG) Log.v(TAG, "onSurfaceDestroyed:");
 			if (mDrawer != null) {
-				mDrawer.release();
+				//mDrawer.release();
 				mDrawer = null;
 			}
 			if (mSTexture != null) {
 				mSTexture.release();
 				mSTexture = null;
 			}
-			GLDrawer2D.deleteTex(hTex);
+			//GLDrawer2D.deleteTex(hTex);
 		}
 
 		private final void updateViewport() {

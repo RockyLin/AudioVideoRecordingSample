@@ -106,8 +106,9 @@ public class GLDrawer2D {
 	 * terminatinng, this should be called in GL context
 	 */
 	public void release() {
-		if (hProgram >= 0)
-			GLES20.glDeleteProgram(hProgram);
+		if (hProgram >= 0) {
+            GLES20.glDeleteProgram(hProgram);
+        }
 		hProgram = -1;
 	}
 
@@ -167,6 +168,7 @@ public class GLDrawer2D {
 		if (DEBUG) Log.v(TAG, "deleteTex:");
 		final int[] tex = new int[] {hTex};
 		GLES20.glDeleteTextures(1, tex, 0);
+        GLES20.glFlush();
 	}
 
 	/**
